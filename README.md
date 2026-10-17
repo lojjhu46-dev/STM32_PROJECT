@@ -22,24 +22,23 @@
 
 ## 系统架构
 
-```mermaid
-flowchart LR
-    subgraph T["感知终端"]
-        S["DHT22 / 光敏电阻 / 土壤探头"] --> MCU1["STM32F103C8T6"]
-        MCU1 --> OLED1["OLED (软件 I2C)"]
-        MCU1 --> LORA1["LLCC68"]
-    end
+感知终端
+├── 传感器：DHT22（温湿度）、光敏电阻（光照）、土壤探头（土壤湿度）
+├── 主控：STM32F103C8T6（72 MHz）
+│   ├── OLED（软件 I2C）—— 本地显示采集值与状态
+│   └── LLCC68（SPI1）—— LoRa 发送
+└── 5 s 周期：采集 → 组帧 → 发送 → 刷屏
 
-    LORA1 -->|"LoRa 470.5 MHz / SF9"| LORA2["LLCC68"]
+            │
+            │  LoRa  470.5 MHz / SF9 / BW 125 kHz
+            ▼
 
-    subgraph G["汇聚网关"]
-        LORA2 --> MCU2["STM32F103C8T6"]
-        MCU2 --> OLED2["OLED (软件 I2C)"]
-        MCU2 --> ESP["ESP8266"]
-    end
-
-    ESP -->|"MQTT over TCP"| CLOUD["巴法云 bemfa.com:9501"]
-```
+汇聚网关
+├── LLCC68（SPI1）—— 连续接收（RxContinuous）
+├── 主控：STM32F103C8T6（72 MHz）
+│   ├── OLED（软件 I2C）—— 显示解析结果与模块状态
+│   └── ESP8266（USART2，AT 透传）
+└── MQTT over TCP → 巴法云（bemfa.com:9501）
 
 ## 硬件说明
 
