@@ -22,23 +22,8 @@
 
 ## 系统架构
 
-感知终端
-├── 传感器：DHT22（温湿度）、光敏电阻（光照）、土壤探头（土壤湿度）
-├── 主控：STM32F103C8T6（72 MHz）
-│   ├── OLED（软件 I2C）—— 本地显示采集值与状态
-│   └── LLCC68（SPI1）—— LoRa 发送
-└── 5 s 周期：采集 → 组帧 → 发送 → 刷屏
+<img width="578" height="368" alt="image" src="https://github.com/user-attachments/assets/a77b90ae-95d7-479e-a9f7-f30b8e9b0649" />
 
-            │
-            │  LoRa  470.5 MHz / SF9 / BW 125 kHz
-            ▼
-
-汇聚网关
-├── LLCC68（SPI1）—— 连续接收（RxContinuous）
-├── 主控：STM32F103C8T6（72 MHz）
-│   ├── OLED（软件 I2C）—— 显示解析结果与模块状态
-│   └── ESP8266（USART2，AT 透传）
-└── MQTT over TCP → 巴法云（bemfa.com:9501）
 
 ## 硬件说明
 
